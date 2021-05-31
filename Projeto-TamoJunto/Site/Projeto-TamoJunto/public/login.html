@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tamo Junto Login</title>
+    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/TamoJuntoStyle.css">
+    <link rel="sortcut icon" href="img/favicon.png" type="image/png" />;
+    <script src="https://kit.fontawesome.com/48b24e7021.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div class="header">
+        <div class="container">
+            <h1 class="titulo"><span><a href="TamoJunto.html">Tamo Junto Cifras</a></span></h1>
+            <div class="nav">
+                <ul>
+                    <li></li>
+                    <li><a href="AprendaCifra.html">Aprenda a tocar</a></li>
+                    <li><a href="enviarCifra.html">Enviar Cifra</a></li>
+                    <li><a href="login.html">Entrar</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="login">
+        <div class="container">
+            <div class="box-login">
+                <h1>Login</h1>
+
+
+                <form id="form-login" method="post" onsubmit="return entrar()">
+                    Usuário:
+                    <input type="text" class="input-padrao" name="login">
+                    <br>
+                    Senha:
+                    <input type="password" class="input-padrao" name="senha">
+                    <br>
+                    <button id="btn-entrar" class="btn-green">Entrar</button>
+                    <br>
+                    <a href="cadastro.html">Cadastra-se</a>
+                </form>
+
+                <div class="extra">
+                    <div id="div_erro" class="msg_erro">
+                    </div>
+                    <img src="" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="container">
+            <h4>Feito com muito carinho por Rafael <i class="far fa-heart"></i></h4>
+        </div>
+    </div>
+</body>
+
+</html>
+
+<script>
+    function entrar() {
+        aguardar();
+        var formulario = new URLSearchParams(new FormData(form_login));
+        fetch("/usuarios/autenticar", {
+            method: "POST",
+            body: formulario
+        }).then(resposta => {
+
+            if (resposta.ok) {
+
+                resposta.json().then(json => {
+
+                    sessionStorage.login_usuario_meuapp = json.login;
+                    sessionStorage.nome_usuario_meuapp = json.nome;
+                    sessionStorage.id_usuario_meuapp = json.id;
+
+                    window.location.href = 'tempo-real.html';
+                });
+
+            } else {
+
+                console.log('Erro de login!');
+
+                resposta.text().then(texto => {
+                    console.error(texto);
+                    finalizar_aguardar(texto);
+                });
+            }
+        });
+
+        return false;
+    }
+
+    function aguardar() {
+        btn_entrar.disabled = true;
+        img_aguarde.style.visibility = 'visible';
+        div_erro.style.visibility = 'hidden';
+    }
+
+    function finalizar_aguardar(resposta) {
+        btn_entrar.disabled = false;
+        img_aguarde.style.visibility = 'hidden';
+        div_erro.style.visibility = 'visible';
+        div_erro.innerHTML = resposta;
+    }
+</script>
